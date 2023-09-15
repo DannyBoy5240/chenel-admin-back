@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    gender: {
+      type: Boolean,
+      default: false, // default is male
+    },
     roles: {
       type: String,
       default: Roles.CUSTOMER,
@@ -36,6 +40,10 @@ const userSchema = new mongoose.Schema(
     birthday: {
       type: Date,
       default: Date.now(),
+    },
+    relationship: {
+      type: String,
+      default: "",
     },
     isProfileDone: {
       type: Boolean,

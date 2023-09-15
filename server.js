@@ -19,7 +19,11 @@ const connectDatabase = require("./src/db");
 connectDatabase();
 
 // corss-origin-allow-all
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 
 // sets favicon in routes
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
