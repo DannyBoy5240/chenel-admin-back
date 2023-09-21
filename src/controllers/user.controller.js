@@ -1,6 +1,8 @@
 const User = require("../models/user.model");
 const UserDoc = require("../models/userdoc.model");
 
+const { Roles, MEMBER_STATUS } = require("../configs/enums");
+
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 const crypto = require("crypto");
@@ -183,6 +185,36 @@ const signIn = async (req, res) => {
   }
 };
 
+// Approve Pending User
+const approveUser = async (req, res) => {
+  const { email } = req.body;
+  try {
+    await User.updateOne(
+      { email: email },
+      { $set: { member_status: MEMBER_STATUS.ACTIVATE } }
+    );
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Remove User
+const removeUser = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    await User.deleteOne({ email });
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Passport Upload
 const passportUpload = async (req, res) => {
   if (!req.file) {
@@ -193,8 +225,6 @@ const passportUpload = async (req, res) => {
   const uploadedFile = req.file;
   const fileName = uploadedFile.filename;
   const email = req.body.email;
-
-  console.log("email -> ", email, " name -> ", fileName);
 
   try {
     const updatedUser = await User.findOneAndUpdate(
@@ -237,10 +267,12 @@ const viewList = async (req, res) => {
       email: user.email,
       fullName: user.fullName,
       gender: user.gender,
-      phoneNumber: user.phoneNumber,
+      birthday: user.birthday,
       address: user.address,
+      phoneNumber: user.phoneNumber,
       roles: user.roles,
       regTime: user.createdAt,
+      status: user.member_status,
     }));
 
     return res.status(200).json({
@@ -331,6 +363,28 @@ const viewAllDocs = async (req, res) => {
   }
 };
 
+// Get User Doc Status
+const getUserDocStatus = async (req, res) => {
+  const email = req.body.email;
+  try {
+    const userdocs = await UserDoc.find({ email });
+
+    if (userdocs.length === 0) {
+      return res.status(200).json({
+        success: false,
+        message: "No user doc found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      status: userdocs[0].status,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Add New User Dynamically
 const addNewUser = async (req, res) => {
   const data = req.body;
@@ -371,8 +425,8 @@ const addNewUser = async (req, res) => {
   }
 };
 
-// Update User Doc responsible Writer Dynamically
-const updateUserWriter = async (req, res) => {
+// Update User Doc
+const userSubmitDoc = async (req, res) => {
   const data = req.body;
 
   try {
@@ -382,6 +436,24 @@ const updateUserWriter = async (req, res) => {
         { $set: { writer: data.writer.email } }
       );
     }
+
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Update User Doc responsible Writer Dynamically
+const updateUserWriter = async (req, res) => {
+  const data = req.body;
+
+  try {
+    await UserDoc.updateOne(
+      { email: data.email },
+      { $set: { qusans: data.qusans, status: "PENDING" } }
+    );
 
     return res.status(200).json({
       success: true,
@@ -411,20 +483,50 @@ const updateUserClerk = async (req, res) => {
   }
 };
 
+// Update User Doc responsible Clerk Dynamically
+const updateWriterDoc = async (req, res) => {
+  const data = req.body;
+
+  try {
+    await UserDoc.updateOne(
+      { email: data.email },
+      {
+        $set: {
+          writerdoc: data.writerdoc,
+          status: data.status,
+        },
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   // authentication
   signUp,
   employeeSignUp,
   signIn,
+  approveUser,
+  removeUser,
   passportUpload,
   // browse
   viewList,
   viewUserDoc,
   viewWriterDoc,
   viewAllDocs,
+  getUserDocStatus,
   // user create
   addNewUser,
+  // user doc submit by themself
+  userSubmitDoc,
   // update user data
   updateUserWriter,
   updateUserClerk,
+  // udate data for writer
+  updateWriterDoc,
 };
