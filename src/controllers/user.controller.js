@@ -430,12 +430,10 @@ const userSubmitDoc = async (req, res) => {
   const data = req.body;
 
   try {
-    for (const info of data.info) {
-      await UserDoc.updateOne(
-        { email: info.email },
-        { $set: { writer: data.writer.email } }
-      );
-    }
+    await UserDoc.updateOne(
+      { email: data.email },
+      { $set: { qusans: data.qusans, status: "PENDING" } }
+    );
 
     return res.status(200).json({
       success: true,
