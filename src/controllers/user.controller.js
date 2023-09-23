@@ -448,10 +448,12 @@ const updateUserWriter = async (req, res) => {
   const data = req.body;
 
   try {
-    await UserDoc.updateOne(
-      { email: data.email },
-      { $set: { qusans: data.qusans, status: "PENDING" } }
-    );
+    for (const info of data.info) {
+      await UserDoc.updateOne(
+        { email: info.email },
+        { $set: { writer: data.writer.email, status: "WRITERCHECKING" } }
+      );
+    }
 
     return res.status(200).json({
       success: true,

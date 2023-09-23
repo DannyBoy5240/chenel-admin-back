@@ -19,7 +19,8 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1",
-    "serve-favicon": "^2.5.0"
+    "serve-favicon": "^2.5.0",
+    "stripe": "^13.7.0"
   },
   "devDependencies": {
     "eslint": "^8.49.0",

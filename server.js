@@ -6,6 +6,7 @@ var cors = require("cors");
 
 // imports routes, middleware, and configs
 const users = require("./src/routes/user.route");
+const stripepayment = require("./src/routes/stripepayment.route");
 const { notFoundRoute, errorHandler } = require("./src/configs/errorHandler");
 
 // loads environment variables from .env file
@@ -45,6 +46,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/users", users);
+app.use("/api/stripepayment", stripepayment);
 
 // 404 - not found error handler
 app.use(notFoundRoute);
