@@ -22,7 +22,7 @@ connectDatabase();
 // corss-origin-allow-all
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "http://195.201.246.182:3000",
   })
 );
 

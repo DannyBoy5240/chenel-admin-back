@@ -131,8 +131,12 @@ const employeeSignUp = async (req, res) => {
 const signIn = async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("email -> ", email);
+
   try {
     const user = await User.findOne({ email });
+
+    console.log("user -> ", user);
 
     if (!user) {
       return res.status(200).json({

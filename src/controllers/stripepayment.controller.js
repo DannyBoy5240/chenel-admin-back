@@ -1,9 +1,11 @@
-const stripe = require("stripe")("sk_test_4eC39HqLyjWDarjtT1zdp7dc");
+// const stripe = require("stripe")("sk_test_4eC39HqLyjWDarjtT1zdp7dc");
+const stripe = require("stripe")("sk_test_51MTajBDswrOD1TWsZCM84GyUUPlmWR5ZpFWLDvfl4bSRbDwGXR0YzS3Tgiew3wPAfHsovRbcRzpxu6T05xPO0MQv008RiT4Zon")
 
 // User Customer SignUp Handler
-const FE_DOMAIN = "http://localhost:3000";
+const FE_DOMAIN = "http://195.201.246.182:3000";
 const stripePayment = async (req, res) => {
-  const price = 100;
+  const mode =  req.body.method;
+  const price = (mode === 1) ? 799 : ((mode === 2) ? 999 : (mode === 3 ? 1299 : 0));
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
@@ -22,7 +24,8 @@ const stripePayment = async (req, res) => {
     success_url: `${FE_DOMAIN}?success=true`,
     cancel_url: `${FE_DOMAIN}?canceled=true`,
   });
-  res.redirect(303, session.url);
+  // res.redirect(303, session.url);
+  res.json({url: session.url})
 };
 
 module.exports = {
