@@ -21,8 +21,8 @@ const stripePayment = async (req, res) => {
       },
     ],
     mode: "payment",
-    success_url: `${FE_DOMAIN}?success=true`,
-    cancel_url: `${FE_DOMAIN}?canceled=true`,
+    success_url: `${FE_DOMAIN}/packages/?success=true`,
+    cancel_url: `${FE_DOMAIN}/packages?success=false`,
   });
   // res.redirect(303, session.url);
   res.json({url: session.url})

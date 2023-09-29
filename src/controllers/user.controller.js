@@ -40,37 +40,39 @@ const signUp = async (req, res) => {
     });
 
     // send email verification link to email
-    // const transporter = nodemailer.createTransport({
-    //   // Configure the email transporter (e.g., Gmail, SMTP server)
-    //   // ...
-    //   host: "smtp.gmail.com",
-    //   port: 587,
-    //   secure: false,
-    //   auth: {
-    //     user: "ngyentuandev@gmail.com",
-    //     pass: "flztqkcsxpgxgdtc",
-    //   },
-    // });
+    const transporter = nodemailer.createTransport({
+      // Configure the email transporter (e.g., Gmail, SMTP server)
+      // ...
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      service: "gmail",
+      auth: {
+        user: "dannyboy02524@gmail.com",
+        pass: "bktj uryh beqq jtth",
+      },
+    });
 
     // const token = crypto.randomBytes(20).toString("hex"); // Generate a random token
+    const token = await jwt.sign({email, success: true}, "secret-key", {expiresIn: "1h"});
 
-    // // Send the verification email
-    // const mailOptions = {
-    //   from: "chenel@service.com",
-    //   to: email,
-    //   subject: "Email Verification",
-    //   text: `Click the following link to verify your email: http://localhost:3000/verify-email/${token}`,
-    // };
+    // Send the verification email
+    const mailOptions = {
+      from: "chenel@gmail.com",
+      to: email,
+      subject: "Chenel Service Email Verification",
+      text: `Click the following link to verify your email: http://195.201.246.182:3000/verify-email/${token}`,
+    };
 
-    // transporter.sendMail(mailOptions, (error, info) => {
-    //   if (error) {
-    //     console.log(error);
-    //     res.status(500).send("Email sending failed.");
-    //   } else {
-    //     console.log("Email sent: " + info.response);
-    //     res.status(200).send("Verification email sent.");
-    //   }
-    // });
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send("Email sending failed.");
+      } else {
+        console.log("Email sent: " + info.response);
+        res.status(200).send("Verification email sent.");
+      }
+    });
 
     return res.status(200).json({
       success: true,
@@ -119,6 +121,41 @@ const employeeSignUp = async (req, res) => {
       roles,
     });
 
+    // send email verification link to email
+    const transporter = nodemailer.createTransport({
+      // Configure the email transporter (e.g., Gmail, SMTP server)
+      // ...
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      service: "gmail",
+      auth: {
+        user: "dannyboy02524@gmail.com",
+        pass: "bktj uryh beqq jtth",
+      },
+    });
+
+    // const token = crypto.randomBytes(20).toString("hex"); // Generate a random token
+    const token = await jwt.sign({email, success: true}, "secret-key", {expiresIn: "1h"});
+
+    // Send the verification email
+    const mailOptions = {
+      from: "chenel@gmail.com",
+      to: email,
+      subject: "Chenel Service Email Verification",
+      text: `Click the following link to verify your email: http://195.201.246.182:3000/verify-email/${token}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send("Email sending failed.");
+      } else {
+        console.log("Email sent: " + info.response);
+        res.status(200).send("Verification email sent.");
+      }
+    });
+
     return res.status(200).json({
       success: true,
     });
@@ -149,19 +186,19 @@ const signIn = async (req, res) => {
       });
     }
 
-    // if (user.email_verified == false) {
-    //   return res.status(200).json({
-    //     success: false,
-    //     message: "Email is not verified",
-    //   });
-    // }
+    if (user.email_verified == false) {
+      return res.status(200).json({
+        success: false,
+        message: "Email is not verified",
+      });
+    }
 
-    // if (user.member_status !== "ACTIVATE") {
-    //   return res.status(200).json({
-    //     success: false,
-    //     message: `Your account is on ${user.member_status}`,
-    //   });
-    // }
+    if (user.member_status !== "ACTIVATED") {
+      return res.status(200).json({
+        success: false,
+        message: `Your account is on ${user.member_status}`,
+      });
+    }
 
     // jwt
     const payload = {
@@ -175,11 +212,22 @@ const signIn = async (req, res) => {
       if (err) throw err;
       return res.status(200).json({ token, success: true });
     });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
-    // return res.status(200).json({
-    //   success: true,
-    //   roles: user.roles,
-    // });
+// Emaily Verify
+const emailVerify = async (req, res) => {
+  const { email } = req.body;
+  try {
+    await User.updateOne(
+      { email: email },
+      { $set: { email_verified: true } }
+    );
+    return res.status(200).json({
+      success: true,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -229,7 +277,7 @@ const passportUpload = async (req, res) => {
   try {
     const updatedUser = await User.findOneAndUpdate(
       { email: email },
-      { avatar: fileName },
+      { passport: fileName },
       { new: true }
     );
 
@@ -248,6 +296,137 @@ const passportUpload = async (req, res) => {
   // res
   //   .status(200)
   //   .json({ message: "File uploaded successfully", file: uploadedFile });
+};
+
+// Workpermit Upload
+const workpermitUpload = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  // The uploaded file can be accessed as req.file
+  const uploadedFile = req.file;
+  const fileName = uploadedFile.filename;
+  const email = req.body.email;
+
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { email: email },
+      { workpermit: fileName },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+  // res
+  //   .status(200)
+  //   .json({ message: "File uploaded successfully", file: uploadedFile });
+};
+
+// Security Upload
+const securityUpload = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  // The uploaded file can be accessed as req.file
+  const uploadedFile = req.file;
+  const fileName = uploadedFile.filename;
+  const email = req.body.email;
+
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { email: email },
+      { security: fileName },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+  // res
+  //   .status(200)
+  //   .json({ message: "File uploaded successfully", file: uploadedFile });
+};
+
+// contactUs
+const contactUs = async (req, res) => {
+  const {name, email, subject, message} = req.body;
+
+  try {
+
+    // send email verification link to email
+    const transporter = nodemailer.createTransport({
+      // Configure the email transporter (e.g., Gmail, SMTP server)
+      // ...
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      service: "gmail",
+      auth: {
+        user: "dannyboy02524@gmail.com",
+        pass: "bktj uryh beqq jtth",
+      },
+    });
+
+    // Send the verification email
+    const mailOptions = {
+      from: "chenel@gmail.com",
+      to: "Taxgration@gmail.com",
+      subject: "Chenel Service Supporting Messages",
+      html: `<div style="max-width: 500px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+        <h1>Contact Us</h1>
+        <div>
+            <label for="name" style="display: block; margin-bottom: 10px;">Name:</label>
+            <input type="text" id="name" name="name" value=${name} disabled required style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+
+            <label for="email" style="display: block; margin-bottom: 10px;">Email:</label>
+            <input type="email" id="email" name="email" value=${email} disabled required style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+
+            <label for="subject" style="display: block; margin-bottom: 10px;">Subject:</label>
+            <input type="text" id="subject" name="subject" value=${subject} disabled required style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+
+            <label for="message" style="display: block; margin-bottom: 10px;">Message:</label>
+            <textarea id="message" name="message" rows="4" value=${message} disabled required style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+        </div>
+    </div>`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send("Email sending failed.");
+      } else {
+        console.log("Email sent: " + info.response);
+        res.status(200).send("Verification email sent.");
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // View User List
@@ -278,6 +457,31 @@ const viewList = async (req, res) => {
     return res.status(200).json({
       success: true,
       users: userList,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get Documents
+const getDocuments = async (req, res) => {
+  const {email} = req.body;
+  try {
+    const users = await User.find({email});
+
+    if (users.length === 0) {
+      res.status(200).json({
+        success: false,
+        message: "No users found",
+      });
+      return;
+    }
+
+    return res.status(200).json({
+      success: true,
+      passport: users[0].passport,
+      workpermit: users[0].workpermit,
+      security: users[0].security
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -511,9 +715,14 @@ module.exports = {
   signUp,
   employeeSignUp,
   signIn,
+  emailVerify,
   approveUser,
   removeUser,
   passportUpload,
+  workpermitUpload,
+  securityUpload,
+  contactUs,
+  getDocuments,
   // browse
   viewList,
   viewUserDoc,

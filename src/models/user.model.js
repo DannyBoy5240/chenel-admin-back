@@ -57,6 +57,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    passport: {
+      type: String,
+      default: "",
+    },
+    workpermit: {
+      type: String,
+      default: "",
+    },
+    security: {
+      type: String,
+      default: "",
+    }
   },
   { timestamps: true }
 );
