@@ -3,8 +3,6 @@ const UserDoc = require("../models/userdoc.model");
 
 const { Roles, MEMBER_STATUS } = require("../configs/enums");
 
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
@@ -40,39 +38,39 @@ const signUp = async (req, res) => {
     });
 
     // send email verification link to email
-    const transporter = nodemailer.createTransport({
-      // Configure the email transporter (e.g., Gmail, SMTP server)
-      // ...
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      service: "gmail",
-      auth: {
-        user: "dannyboy02524@gmail.com",
-        pass: "bktj uryh beqq jtth",
-      },
-    });
+    // const transporter = nodemailer.createTransport({
+    //   // Configure the email transporter (e.g., Gmail, SMTP server)
+    //   // ...
+    //   host: "smtp.gmail.com",
+    //   port: 587,
+    //   secure: false,
+    //   service: "gmail",
+    //   auth: {
+    //     user: "dannyboy02524@gmail.com",
+    //     pass: "bktj uryh beqq jtth",
+    //   },
+    // });
 
-    // const token = crypto.randomBytes(20).toString("hex"); // Generate a random token
-    const token = await jwt.sign({email, success: true}, "secret-key", {expiresIn: "1h"});
+    // // const token = crypto.randomBytes(20).toString("hex"); // Generate a random token
+    // const token = await jwt.sign({email, success: true}, "secret-key", {expiresIn: "1h"});
 
-    // Send the verification email
-    const mailOptions = {
-      from: "chenel@gmail.com",
-      to: email,
-      subject: "Chenel Service Email Verification",
-      text: `Click the following link to verify your email: http://195.201.246.182:3000/verify-email/${token}`,
-    };
+    // // Send the verification email
+    // const mailOptions = {
+    //   from: "chenel@gmail.com",
+    //   to: email,
+    //   subject: "Chenel Service Email Verification",
+    //   text: `Click the following link to verify your email: http://195.201.246.182:3000/verify-email/${token}`,
+    // };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-        res.status(500).send("Email sending failed.");
-      } else {
-        console.log("Email sent: " + info.response);
-        res.status(200).send("Verification email sent.");
-      }
-    });
+    // transporter.sendMail(mailOptions, (error, info) => {
+    //   if (error) {
+    //     console.log(error);
+    //     res.status(500).send("Email sending failed.");
+    //   } else {
+    //     console.log("Email sent: " + info.response);
+    //     res.status(200).send("Verification email sent.");
+    //   }
+    // });
 
     return res.status(200).json({
       success: true,
@@ -98,11 +96,18 @@ const employeeSignUp = async (req, res) => {
 
   try {
     const isExistingUser = await User.findOne({ email });
-
     if (isExistingUser) {
       return res.status(200).json({
         success: false,
         message: "User already exists",
+      });
+    }
+
+    const isExistingPhone = await User.findOne({ phoneNumber });
+    if (isExistingPhone) {
+      return res.status(200).json({
+        success: false,
+        message: "Phone is already used",
       });
     }
 
@@ -122,39 +127,39 @@ const employeeSignUp = async (req, res) => {
     });
 
     // send email verification link to email
-    const transporter = nodemailer.createTransport({
-      // Configure the email transporter (e.g., Gmail, SMTP server)
-      // ...
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      service: "gmail",
-      auth: {
-        user: "dannyboy02524@gmail.com",
-        pass: "bktj uryh beqq jtth",
-      },
-    });
+    // const transporter = nodemailer.createTransport({
+    //   // Configure the email transporter (e.g., Gmail, SMTP server)
+    //   // ...
+    //   host: "smtp.gmail.com",
+    //   port: 587,
+    //   secure: false,
+    //   service: "gmail",
+    //   auth: {
+    //     user: "dannyboy02524@gmail.com",
+    //     pass: "bktj uryh beqq jtth",
+    //   },
+    // });
 
-    // const token = crypto.randomBytes(20).toString("hex"); // Generate a random token
-    const token = await jwt.sign({email, success: true}, "secret-key", {expiresIn: "1h"});
+    // // const token = crypto.randomBytes(20).toString("hex"); // Generate a random token
+    // const token = await jwt.sign({email, success: true}, "secret-key", {expiresIn: "1h"});
 
-    // Send the verification email
-    const mailOptions = {
-      from: "chenel@gmail.com",
-      to: email,
-      subject: "Chenel Service Email Verification",
-      text: `Click the following link to verify your email: http://195.201.246.182:3000/verify-email/${token}`,
-    };
+    // // Send the verification email
+    // const mailOptions = {
+    //   from: "chenel@gmail.com",
+    //   to: email,
+    //   subject: "Chenel Service Email Verification",
+    //   text: `Click the following link to verify your email: http://195.201.246.182:3000/verify-email/${token}`,
+    // };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-        res.status(500).send("Email sending failed.");
-      } else {
-        console.log("Email sent: " + info.response);
-        res.status(200).send("Verification email sent.");
-      }
-    });
+    // transporter.sendMail(mailOptions, (error, info) => {
+    //   if (error) {
+    //     console.log(error);
+    //     res.status(500).send("Email sending failed.");
+    //   } else {
+    //     console.log("Email sent: " + info.response);
+    //     res.status(200).send("Verification email sent.");
+    //   }
+    // });
 
     return res.status(200).json({
       success: true,
@@ -221,10 +226,7 @@ const signIn = async (req, res) => {
 const emailVerify = async (req, res) => {
   const { email } = req.body;
   try {
-    await User.updateOne(
-      { email: email },
-      { $set: { email_verified: true } }
-    );
+    await User.updateOne({ email: email }, { $set: { email_verified: true } });
     return res.status(200).json({
       success: true,
     });
@@ -370,10 +372,9 @@ const securityUpload = async (req, res) => {
 
 // contactUs
 const contactUs = async (req, res) => {
-  const {name, email, subject, message} = req.body;
+  const { name, email, subject, message } = req.body;
 
   try {
-
     // send email verification link to email
     const transporter = nodemailer.createTransport({
       // Configure the email transporter (e.g., Gmail, SMTP server)
@@ -465,9 +466,9 @@ const viewList = async (req, res) => {
 
 // Get Documents
 const getDocuments = async (req, res) => {
-  const {email} = req.body;
+  const { email } = req.body;
   try {
-    const users = await User.find({email});
+    const users = await User.find({ email });
 
     if (users.length === 0) {
       res.status(200).json({
@@ -481,7 +482,7 @@ const getDocuments = async (req, res) => {
       success: true,
       passport: users[0].passport,
       workpermit: users[0].workpermit,
-      security: users[0].security
+      security: users[0].security,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

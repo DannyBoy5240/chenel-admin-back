@@ -28,8 +28,19 @@ const {
 
 // const auth = require("../middleware/auth");
 
+const path = require("path");
 const multer = require("multer");
-const upload = multer({ dest: "../chenel-admin-front/public/uploads/" });
+// Define the storage engine with a custom filename function
+const storage = multer.diskStorage({
+  destination: "../chenel-admin-front/public/uploads/",
+  filename: function (req, file, cb) {
+    // Generate a new filename with the desired file extension
+    const fileExtension = path.extname(file.originalname); // Get the original file extension
+    const newFilename = Date.now() + fileExtension; // Add a timestamp and the original extension
+    cb(null, newFilename);
+  },
+});
+const upload = multer({ storage: storage });
 
 // authentication middle
 router.post("/signUp", signUp);
@@ -41,7 +52,11 @@ router.post("/approveUser", approveUser);
 router.post("/removeUser", removeUser);
 
 router.post("/upload/passport", upload.single("passport"), passportUpload);
-router.post("/upload/workpermit", upload.single("workpermit"), workpermitUpload);
+router.post(
+  "/upload/workpermit",
+  upload.single("workpermit"),
+  workpermitUpload
+);
 router.post("/upload/security", upload.single("security"), securityUpload);
 
 router.post("/contactus", contactUs);
