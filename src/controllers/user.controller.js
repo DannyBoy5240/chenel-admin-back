@@ -370,6 +370,37 @@ const securityUpload = async (req, res) => {
   //   .json({ message: "File uploaded successfully", file: uploadedFile });
 };
 
+// formDocUpload Upload
+const formDocUpload = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  // The uploaded file can be accessed as req.file
+  const uploadedFile = req.file;
+  const fileName = uploadedFile.filename;
+  const email = req.body.email;
+
+  try {
+    const updatedDoc = await UserDoc.findOneAndUpdate(
+      { email: email },
+      { formdoc: fileName, status: "CLERKCONFIRM" },
+      { new: true }
+    );
+
+    if (!updatedDoc) {
+      return res.status(404).json({ error: "User Doc not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: updatedDoc,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // contactUs
 const contactUs = async (req, res) => {
   const { name, email, subject, message } = req.body;
@@ -722,6 +753,7 @@ module.exports = {
   passportUpload,
   workpermitUpload,
   securityUpload,
+  formDocUpload,
   contactUs,
   getDocuments,
   // browse

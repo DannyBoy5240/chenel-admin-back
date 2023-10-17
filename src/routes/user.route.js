@@ -10,6 +10,7 @@ const {
   passportUpload,
   workpermitUpload,
   securityUpload,
+  formDocUpload,
   contactUs,
   getDocuments,
   //
@@ -58,6 +59,8 @@ router.post(
   workpermitUpload
 );
 router.post("/upload/security", upload.single("security"), securityUpload);
+
+router.post("/upload/formdoc", upload.single("formdoc"), formDocUpload);
 
 router.post("/contactus", contactUs);
 router.post("/getdocuments", getDocuments);

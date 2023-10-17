@@ -47,35 +47,35 @@ app.get("/", (req, res) => {
     .json({ message: "Welcome to CHENEL Node.js application backend." });
 });
 
-app.get("/api/uploads/:imageName", (req, res) => {
-  const imageName = req.params.imageName;
-  const imagePath = path.join(
-    path.join(__dirname, "../chenel-admin-front/public/uploads", imageName)
-  );
-  console.log("-->", imagePath);
-  const imageExtension = path.extname(imagePath).toLowerCase(); // Convert to lowercase for case insensitivity
+// app.get("/api/uploads/:imageName", (req, res) => {
+//   const imageName = req.params.imageName;
+//   const imagePath = path.join(
+//     path.join(__dirname, "../chenel-admin-front/public/uploads", imageName)
+//   );
+//   console.log("-->", imagePath);
+//   const imageExtension = path.extname(imagePath).toLowerCase(); // Convert to lowercase for case insensitivity
 
-  // Define an array of common image extensions
-  const imageExtensions = [
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".jfif",
-    ".gif",
-    ".bmp",
-    ".tiff",
-    ".webp",
-  ];
+//   // Define an array of common image extensions
+//   const imageExtensions = [
+//     ".jpg",
+//     ".jpeg",
+//     ".png",
+//     ".jfif",
+//     ".gif",
+//     ".bmp",
+//     ".tiff",
+//     ".webp",
+//   ];
 
-  if (imageExtensions.includes(imageExtension)) {
-    res.setHeader("Content-Type", `image/${imageExtension.substr(1)}`); // Set content type dynamically
-    res.setHeader("Content-Disposition", "inline"); // Set to 'inline' to display in the browser
-    res.sendFile(imagePath);
-  } else {
-    res.setHeader("Content-Disposition", "attachment"); // Set to 'attachment' for non-image files
-    res.sendFile(imagePath);
-  }
-});
+//   if (imageExtensions.includes(imageExtension)) {
+//     res.setHeader("Content-Type", `image/${imageExtension.substr(1)}`); // Set content type dynamically
+//     res.setHeader("Content-Disposition", "inline"); // Set to 'inline' to display in the browser
+//     res.sendFile(imagePath);
+//   } else {
+//     res.setHeader("Content-Disposition", "attachment"); // Set to 'attachment' for non-image files
+//     res.sendFile(imagePath);
+//   }
+// });
 
 app.use("/api/users", users);
 app.use("/api/stripepayment", stripepayment);

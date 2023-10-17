@@ -242,6 +242,10 @@ const userDocSchema = new mongoose.Schema(
       default: DOC_STATUS.EDITING,
       enum: Object.values(DOC_STATUS),
     },
+    formdoc: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
