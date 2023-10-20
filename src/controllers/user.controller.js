@@ -179,7 +179,7 @@ const signIn = async (req, res) => {
     if (!user) {
       return res.status(200).json({
         success: false,
-        message: "User not found",
+        message: "user_not_found",
       });
     }
 
@@ -187,21 +187,21 @@ const signIn = async (req, res) => {
     if (!isMatch) {
       return res.status(200).json({
         success: false,
-        message: "Password is incorrect",
+        message: "password_incorrect",
       });
     }
 
     if (user.email_verified == false) {
       return res.status(200).json({
         success: false,
-        message: "Email is not verified",
+        message: "email_not_verified",
       });
     }
 
     if (user.member_status !== "ACTIVATED") {
       return res.status(200).json({
         success: false,
-        message: `Your account is on ${user.member_status}`,
+        message: `account_on_${user.member_status}`,
       });
     }
 
