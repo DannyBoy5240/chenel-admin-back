@@ -3,6 +3,7 @@ const env = require("dotenv");
 const favicon = require("serve-favicon");
 var path = require("path");
 var cors = require("cors");
+// const resolvePath = path.resolve;
 
 // imports routes, middleware, and configs
 const users = require("./src/routes/user.route");
@@ -23,8 +24,9 @@ connectDatabase();
 // corss-origin-allow-all
 app.use(
   cors({
-    // origin: "http://195.201.246.182:3000",
-    origin: "http://localhost:3000",
+    origin: "http://195.201.246.182:3000",
+    // origin: "http://localhost:3000",
+    // origin: "http://chenelsuperservice.com",
   })
 );
 
@@ -33,6 +35,8 @@ app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 // sets static folder
 app.use(express.static(path.join(__dirname, "public")));
+// app.use(expess.static(resolvePath(__dirname, "static/build")));
+// app.use('/uploads', express.static(path.join(__dirname, "../chenel-admin-front/public/uploads/")));
 
 // parse requests of content-type - application/json
 app.use(express.json());
