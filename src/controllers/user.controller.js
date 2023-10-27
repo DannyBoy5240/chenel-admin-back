@@ -30,6 +30,7 @@ const signUp = async (req, res) => {
       email,
       fullName,
       password: en_password,
+      member_status: MEMBER_STATUS.ACTIVATE,
     });
 
     // new UserDoc create
@@ -46,8 +47,10 @@ const signUp = async (req, res) => {
       secure: false,
       service: "gmail",
       auth: {
-        user: "dannyboy02524@gmail.com",
-        pass: "bktj uryh beqq jtth",
+        // user: "dannyboy02524@gmail.com",
+        // pass: "bktj uryh beqq jtth",
+        user: "Chenelsuperservice@gmail.com",
+        pass: "pyfk ctak hebd gcfv",
       },
     });
 
@@ -56,7 +59,7 @@ const signUp = async (req, res) => {
 
     // Send the verification email
     const mailOptions = {
-      from: "chenel@gmail.com",
+      from: "ChenelSuperService Chenelsuperservice@gmail.com",
       to: email,
       subject: "Chenel Service Email Verification",
       text: `Click the following link to verify your email: http://195.201.246.182:3000/verify-email/${token}`,
@@ -135,8 +138,10 @@ const employeeSignUp = async (req, res) => {
       secure: false,
       service: "gmail",
       auth: {
-        user: "dannyboy02524@gmail.com",
-        pass: "bktj uryh beqq jtth",
+        // user: "dannyboy02524@gmail.com",
+        // pass: "bktj uryh beqq jtth",
+        user: "Chenelsuperservice@gmail.com",
+        pass: "pyfk ctak hebd gcfv",
       },
     });
 
@@ -145,7 +150,7 @@ const employeeSignUp = async (req, res) => {
 
     // Send the verification email
     const mailOptions = {
-      from: "chenel@gmail.com",
+      from: "ChenelSuperService Cheneluserservice@gmail.com",
       to: email,
       subject: "Chenel Service Email Verification",
       text: `Click the following link to verify your email: http://195.201.246.182:3000/verify-email/${token}`,
@@ -235,6 +240,88 @@ const emailVerify = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Reset Password
+const resetPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const isExistingUser = await User.findOne({ email });
+
+    if (!isExistingUser) {
+      return res.status(200).json({
+        success: false,
+        message: "user_not_exist",
+      });
+    }
+
+    // generate random verify-code for forget password function
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let verify_code = '';
+    const verify_code_len = 6;
+    for (let i = 0; i < verify_code_len; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      verify_code += characters.charAt(randomIndex);
+    }
+
+    // send email verification link to email
+    const transporter = nodemailer.createTransport({
+      // Configure the email transporter (e.g., Gmail, SMTP server)
+      // ...
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      service: "gmail",
+      auth: {
+        user: "Chenelsuperservice@gmail.com",
+        pass: "pyfk ctak hebd gcfv",
+      },
+    });
+
+    // Send the verification email
+    const mailOptions = {
+      from: "ChenelSuperService Chenelsuperservice@gmail.com",
+      to: email,
+      subject: "Chenel Service Forget Password Verification",
+      text: `Please use this code for Forget Password Verification : ${verify_code}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send("Email sending failed.");
+      } else {
+        console.log("Email sent: " + info.response);
+        // res.status(200).send("Verification email sent.");
+      }
+    });
+
+    // const salt = await bcrypt.genSalt(10);
+    // verify_code = await bcrypt.hash(verify_code, salt);
+
+    return res.status(200).json({
+      success: true,
+      code: verify_code,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+// Update Password
+const updatePassword = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const en_password = await bcrypt.hash(password, salt);
+
+    await User.updateOne({ email: email }, { $set: { password: en_password } });
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
 // Approve Pending User
 const approveUser = async (req, res) => {
@@ -416,14 +503,16 @@ const contactUs = async (req, res) => {
       secure: false,
       service: "gmail",
       auth: {
-        user: "dannyboy02524@gmail.com",
-        pass: "bktj uryh beqq jtth",
+        // user: "dannyboy02524@gmail.com",
+        // pass: "bktj uryh beqq jtth",
+        user: "Chenelsuperservice@gmail.com",
+        pass: "pyfk ctak hebd gcfv",
       },
     });
 
     // Send the verification email
     const mailOptions = {
-      from: "chenel@gmail.com",
+      from: "ChenelSuperService Cheneluserservice@gmail.com",
       to: "Taxgration@gmail.com",
       subject: "Chenel Service Supporting Messages",
       html: `<div style="max-width: 500px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
@@ -749,6 +838,8 @@ module.exports = {
   employeeSignUp,
   signIn,
   emailVerify,
+  resetPassword,
+  updatePassword,
   approveUser,
   removeUser,
   passportUpload,

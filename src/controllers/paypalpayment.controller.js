@@ -9,6 +9,7 @@ paypal.configure({
 });
 
 const FE_DOMAIN = "http://195.201.246.182:3000";
+// const FE_DOMAIN = "http://chenelsuperservice.com";
 const paypalPayment = async (req, res) => {
   const method = req.body.method;
   if (method !== 1 && method !== 2 && method !== 3) {

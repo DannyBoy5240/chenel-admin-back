@@ -3,6 +3,7 @@ const stripe = require("stripe")("sk_test_51MTajBDswrOD1TWsZCM84GyUUPlmWR5ZpFWLD
 
 // User Customer SignUp Handler
 const FE_DOMAIN = "http://195.201.246.182:3000";
+// const FE_DOMAIN = "http://chenelsuperservice.com";
 const stripePayment = async (req, res) => {
   const mode =  req.body.method;
   const price = (mode === 1) ? 799 : ((mode === 2) ? 999 : (mode === 3 ? 1299 : 0));

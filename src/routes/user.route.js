@@ -5,6 +5,8 @@ const {
   employeeSignUp,
   signIn,
   emailVerify,
+  resetPassword,
+  updatePassword,
   approveUser,
   removeUser,
   passportUpload,
@@ -48,6 +50,8 @@ router.post("/signUp", signUp);
 router.post("/signUp/employee", employeeSignUp);
 router.post("/signIn", signIn);
 router.post("/emailverify", emailVerify);
+router.post("/resetpassword", resetPassword);
+router.post("/updatepassword/", updatePassword);
 
 router.post("/approveUser", approveUser);
 router.post("/removeUser", removeUser);
